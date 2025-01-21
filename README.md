@@ -48,3 +48,5 @@ export default tseslint.config({
   },
 })
 ```
+
+With dashboard of tasks and new task add ui
