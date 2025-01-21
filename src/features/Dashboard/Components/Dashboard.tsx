@@ -4,6 +4,8 @@ import { TaskContext } from "./Context";
 const Dashboard = () => {    
     const { tasks, setTaskList, deleteTask } = useContext(TaskContext);
     const[loadingstate, setloadingstate] = useState(true)
+    const [filterKeyword, setFilterKeyword] = useState('')
+    const [filterStatus, setFilterStatus] = useState('')
   
     useEffect(() => {
         // Only fetch the data if tasks are empty (first time loading)
@@ -32,11 +34,38 @@ const Dashboard = () => {
         );
         setTaskList(updatedTasks); 
       };
+
+    //   const filteredTasks = tasks.filter((task) =>
+    //     task.taskName.toLowerCase().includes(filterKeyword.toLowerCase())
+    //   );
+
+    const filteredTasks = tasks.filter((task) => {
+        const matchesTitle = task.taskName.toLowerCase().includes(filterKeyword.toLowerCase());
+        const matchesStatus = filterStatus ? task.status === filterStatus : true; // Only filter by status if selected
+        return matchesTitle && matchesStatus;
+      });
   
     return (
         <>
       <div>
         <h1>Task List</h1>
+        <input
+          type="text"
+          placeholder="Filter by title"
+          value={filterKeyword}
+          onChange={(e) => setFilterKeyword(e.target.value)}
+          className="filter-input"
+        />
+
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="filter-input"
+        >
+            <option value="">Filter by Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+        </select>
         {loadingstate? <p>loading.. </p>:
         <table className="task-table">
           <thead>
@@ -50,7 +79,7 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {tasks.map((task) => (
+            {filteredTasks.map((task) => (
               <tr key={task.taskId}>
                 <td>{task.taskId}</td>
                 <td>{task.taskName}</td>
